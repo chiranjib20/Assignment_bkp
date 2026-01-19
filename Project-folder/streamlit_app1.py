@@ -102,19 +102,34 @@ model = models[selected_model_name]
 # --------------------------------------------------
 # Prediction & Evaluation
 # --------------------------------------------------
-try:
-    y_pred = model.predict(X_test)
-except Exception as e:
-    st.warning("Standard prediction failed. Using safe XGBoost prediction.")
-    y_pred = model.predict(X_test, validate_features=False)
+#try:
+#    y_pred = model.predict(X_test)
+#except Exception as e:
+#    st.warning("Standard prediction failed. Using safe XGBoost prediction.")
+#    y_pred = model.predict(X_test, validate_features=False)
 
-if hasattr(model, "predict_proba"):
-    try:
+#if hasattr(model, "predict_proba"):
+#    try:
+#        y_prob = model.predict_proba(X_test)[:, 1]
+#    except Exception:
+#        y_prob = None
+#else:
+#    y_prob = None
+
+y_pred = model.predict(X_test)
+
+try:
+       
         y_prob = model.predict_proba(X_test)[:, 1]
+
     except Exception:
-        y_prob = None
-else:
-    y_prob = None
+       
+        if hasattr(model, "decision_function"):
+            scores = model.decision_function(X_test)
+            y_prob = expit(scores)
+        else:
+            st.error("Selected model does not support probability prediction.")
+            st.stop()
 
 st.subheader(f"Evaluation Metrics – {selected_model_name}")
 
