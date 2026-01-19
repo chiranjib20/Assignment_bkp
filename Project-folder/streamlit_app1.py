@@ -120,16 +120,16 @@ y_pred = model.predict(X_test)
 
 try:
        
-        y_prob = model.predict_proba(X_test)[:, 1]
+     y_prob = model.predict_proba(X_test)[:, 1]
 
-    except Exception:
+except Exception:
        
-        if hasattr(model, "decision_function"):
-            scores = model.decision_function(X_test)
-            y_prob = expit(scores)
-        else:
-            st.error("Selected model does not support probability prediction.")
-            st.stop()
+    if hasattr(model, "decision_function"):
+        scores = model.decision_function(X_test)
+        y_prob = expit(scores)
+    else:
+        st.error("Selected model does not support probability prediction.")
+        st.stop()
 
 st.subheader(f"Evaluation Metrics – {selected_model_name}")
 
